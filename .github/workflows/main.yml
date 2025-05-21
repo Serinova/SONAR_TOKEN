@@ -1,39 +1,21 @@
-name: SonarCloud
+- name: Install dependencies
+  run: |
+    cd serinova-checklist-sistemi/backend
+    npm install --legacy-peer-deps
 
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+- name: Build
+  run: |
+    cd serinova-checklist-sistemi/backend
+    npm run build --if-present
 
-jobs:
-  build:
-    name: Build and Analyze
-    runs-on: ubuntu-latest
+- name: Run tests with coverage
+  run: |
+    cd serinova-checklist-sistemi/backend
+    npm run test:cov
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-        working-directory: ./serinova-checklist-sistemi/backend
-
-      - name: Build
-        run: npm run build --if-present
-        working-directory: ./serinova-checklist-sistemi/backend
-
-      - name: Run tests with coverage
-        run: npm run test:cov
-        working-directory: ./serinova-checklist-sistemi/backend
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-          projectBaseDir: ./serinova-checklist-sistemi/backend
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+- name: SonarCloud Scan
+  uses: SonarSource/sonarcloud-github-action@master
+  with:
+    projectBaseDir: ./serinova-checklist-sistemi/backend
+  env:
+    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
